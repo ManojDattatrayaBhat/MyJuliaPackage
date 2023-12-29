@@ -1,0 +1,10 @@
+name = "MyJuliaPackage"
+uuid = "40b5d336-2750-4b06-b61b-7f65b367b728"
+authors = ["ManojDattatrayaBhat"]
+version = "0.0.1-DEV"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
