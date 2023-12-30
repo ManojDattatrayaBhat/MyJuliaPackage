@@ -26,6 +26,4 @@ jobs:
       - name: Precompile
         run: julia --project -e 'using Pkg; Pkg.precompile()'
       - name: register
-        run: |
-	  julia -e 'using Pkg; Pkg.activate("."); using LocalRegistry; using MyJuliaPackage; register();'
-
+        run: julia --project -e 'using LocalRegistry; using MyJuliaPackage; register()'
