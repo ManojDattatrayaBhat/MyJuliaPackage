@@ -1,5 +1,5 @@
 module MyJuliaPackage
 
-# Write your package code here.
+include("sum.jl")
 
 end
