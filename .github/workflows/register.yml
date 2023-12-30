@@ -1,0 +1,29 @@
+name: Register
+on:
+  push:
+    branches:
+      - main
+    tags: ['*']
+  workflow_dispatch:
+jobs:
+  Register:
+    name: Build, precompile and register the Package
+    steps:
+      - uses: actions/checkout@v3
+      - uses: julia-actions/setup-julia@v1
+      - uses: de-vri-es/setup-git-credentials@v2
+        with:
+          credentials: ${{secrets.GIT_CREDENTIALS}}
+      - name: Add 1PJuliaRegistry
+        run: |
+          julia -e 'using Pkg; Pkg.add("LocalRegistry")'
+          julia -e 'using Pkg; Pkg.Registry.add(RegistrySpec(url = "https://github.com/ManojDattatrayaBhat/JuliaRegistry.git"))'
+          julia -e 'using Pkg.Registry; Registry.update()'
+      - uses: julia-actions/cache@v1
+      - uses: julia-actions/julia-buildpkg@v1
+      - name: Install dependencies
+        run: julia --project -e 'using Pkg; Pkg.instantiate()'
+      - name: Precompile
+        run: julia --project -e 'using Pkg; Pkg.precompile()'
+      - name: register
+        run: julia --project -e 'using LocalRegistry; using MyJuliaPackage; register()'
