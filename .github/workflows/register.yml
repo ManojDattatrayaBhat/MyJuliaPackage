@@ -14,7 +14,7 @@ jobs:
       - uses: julia-actions/setup-julia@v1
       - uses: de-vri-es/setup-git-credentials@v2
         with:
-          credentials: ${{secrets.GIT_CREDENTIALS}}
+          credentials: ${{secrets.GIT_CREDS}}
       - name: Add 1PJuliaRegistry
         run: |
           julia -e 'using Pkg; Pkg.add("LocalRegistry")'
