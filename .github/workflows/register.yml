@@ -8,6 +8,7 @@ on:
 jobs:
   Register:
     name: Build, precompile and register the Package
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: julia-actions/setup-julia@v1
