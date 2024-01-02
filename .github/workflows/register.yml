@@ -28,7 +28,7 @@ jobs:
         run: julia --project -e 'using Pkg; Pkg.precompile()'
       - name: Set up Git
         run: |
-          git config --global user.email "tfm2kor@bosch.com"
-          git config --global user.name "ManojDattatrayaBhat"
+          git config --global user.email "${{github.event.pusher.email}}"
+          git config --global user.name "${{ github.actor }}"
       - name: register
         run: julia --project -e 'using LocalRegistry; using MyJuliaPackage; register()'
