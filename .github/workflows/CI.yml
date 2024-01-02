@@ -37,5 +37,5 @@ jobs:
           echo "SHA: ${{ github.sha }}"
           echo "Ref: ${{ github.ref }}"
           echo "Actor: ${{ github.actor }}"
-          echo "${{ github.event.pusher.email }}"
-          echo "Committer Email: $(git log -n 1 --pretty=format:%ae)"
+          git config --global user.email "${{ github.actor }}@bosch.com"
+          git config --global user.name "${{ github.actor }}"
