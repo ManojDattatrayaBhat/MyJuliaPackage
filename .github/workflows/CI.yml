@@ -26,7 +26,11 @@ jobs:
           - ubuntu-latest
         arch:
           - x64
+    env:
+      GIT_EVENT: ${{ github.event }}
     steps:
+      - name: event details
+        run: echo $GIT_EVENT
       - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@v1
         with:
