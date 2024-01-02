@@ -14,8 +14,8 @@ jobs:
       - uses: julia-actions/setup-julia@v1
       - uses: de-vri-es/setup-git-credentials@v2
         with:
-          credentials: ${{secrets.GIT_CREDENTIALS}}
-      - name: Add 1PJuliaRegistry
+          credentials: ${{secrets.GIT_CREDS}}
+      - name: Add JuliaRegistry
         run: |
           julia -e 'using Pkg; Pkg.add("LocalRegistry")'
           julia -e 'using Pkg; Pkg.Registry.add(RegistrySpec(url = "https://github.com/ManojDattatrayaBhat/JuliaRegistry.git"))'
@@ -26,5 +26,9 @@ jobs:
         run: julia --project -e 'using Pkg; Pkg.instantiate()'
       - name: Precompile
         run: julia --project -e 'using Pkg; Pkg.precompile()'
+      - name: Set up Git
+        run: |
+          git config --global user.email "tfm2kor@bosch.com"
+          git config --global user.name "ManojDattatrayaBhat"
       - name: register
         run: julia --project -e 'using LocalRegistry; using MyJuliaPackage; register()'
