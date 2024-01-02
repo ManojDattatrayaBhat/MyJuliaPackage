@@ -29,7 +29,8 @@ jobs:
           echo "SHA: ${{ github.sha }}"
           echo "Ref: ${{ github.ref }}"
           echo "Actor: ${{ github.actor }}"
-          echo "Event Payload: ${{ toJson(github.event) }}"
+          COMMIT_EMAIL=$(git log -1 --format='%ae')
+          echo "Committer Email: $COMMIT_EMAIL"
       - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@v1
         with:
