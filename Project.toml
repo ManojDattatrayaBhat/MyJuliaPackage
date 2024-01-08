@@ -1,7 +1,7 @@
 name = "MyJuliaPackage"
 uuid = "40b5d336-2750-4b06-b61b-7f65b367b728"
 authors = ["ManojDattatrayaBhat"]
-version = "1.0.0"
+version = "1.0.0-test"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
