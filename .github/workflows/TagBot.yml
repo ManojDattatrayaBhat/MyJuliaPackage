@@ -30,5 +30,6 @@ jobs:
           credentials: ${{secrets.GIT_CREDS}}
       - uses: JuliaRegistries/TagBot@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TAGBOT_TOKEN }} 
           registry: ManojDattatrayaBhat/JuliaRegistry
