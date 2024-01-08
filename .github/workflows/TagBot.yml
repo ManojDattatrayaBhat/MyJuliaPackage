@@ -20,6 +20,8 @@ permissions:
   repository-projects: read
   security-events: read
   statuses: read
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 jobs:
   TagBot:
     if: github.event_name == 'workflow_dispatch' || github.actor == 'JuliaTagBot'
@@ -30,6 +32,5 @@ jobs:
           credentials: ${{secrets.GIT_CREDS}}
       - uses: JuliaRegistries/TagBot@v1
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           token: ${{ secrets.TAGBOT_TOKEN }} 
           registry: ManojDattatrayaBhat/JuliaRegistry
