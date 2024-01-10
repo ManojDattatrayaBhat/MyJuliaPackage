@@ -22,8 +22,6 @@ jobs:
           julia -e 'using Pkg.Registry; Registry.update()'
       - uses: julia-actions/cache@v1
       - uses: julia-actions/julia-buildpkg@v1
-      - name: Install dependencies
-        run: julia --project -e 'using Pkg; Pkg.instantiate()'
       - name: Precompile
         run: julia --project -e 'using Pkg; Pkg.precompile()'
       - name: Set up Git
@@ -31,4 +29,5 @@ jobs:
           git config --global user.email "${{github.event.pusher.email}}"
           git config --global user.name "${{ github.actor }}"
       - name: register
-        run: julia --project -e 'using LocalRegistry; using MyJuliaPackage; register()'
+        run: julia --project -e 'using LocalRegistry; using MyJuliaPackage; register(; ignore_reregistration = true)'
+        
