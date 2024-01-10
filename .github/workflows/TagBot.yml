@@ -1,8 +1,9 @@
 name: TagBot
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["Register"]
+    types:
+      - completed
   workflow_dispatch:
 permissions:
   actions: read
@@ -21,7 +22,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 jobs:
   TagBot:
-    if: github.event_name == 'workflow_dispatch' || github.actor == 'JuliaTagBot' || github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch' || github.actor == 'JuliaTagBot' || github.event_name == 'workflow_run'
     runs-on: ubuntu-latest
     steps:
       - uses: de-vri-es/setup-git-credentials@v2
