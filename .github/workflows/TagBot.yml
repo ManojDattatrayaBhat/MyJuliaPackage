@@ -1,12 +1,11 @@
 name: TagBot
 on:
-  issue_comment:
-    types:
-      - created
+on:
+  push:
+    branches:
+      - main
+    tags: ['*']
   workflow_dispatch:
-    inputs:
-      lookback:
-        default: 3
 permissions:
   actions: read
   checks: read
