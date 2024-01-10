@@ -35,16 +35,19 @@ jobs:
           changelog: |
             This is release {{ version }} of {{ package }}.
             {% if previous_release %}
-            Diff since {{ previous_release }}]({{ compare_url }})
+            Diff since {{ previous_release }} can be found here... ({{ compare_url }})
+            
             {% endif %}
             {% if custom %}
             {{ custom }}
+            
             {% endif %}
             {% if pulls %}
             **Merged pull requests:**
             {% for pull in pulls %}
             - {{ pull.title }} (#{{ pull.number }}) (@{{ pull.author.username }})
             {% endfor %}
+            
             {% if issues %}
             **Closed issues:**
             {% for issue in issues %}
