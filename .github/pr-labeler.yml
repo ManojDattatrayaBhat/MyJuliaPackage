@@ -1,0 +1,12 @@
+enhancement: ['feature/*']
+bug-fix: ['bugfix/*', 'Fix']
+
+documentation:
+  - docs/**/*
+  - ./*.md
+
+testing:
+  - test/*
+
+workflow:
+  - .github/**/*
