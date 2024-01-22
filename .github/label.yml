@@ -1,10 +1,18 @@
-Documentation:
+documentation:
 - changed-files:
-  - any-glob-to-any-file: ['docs/*', '**/*.md']
+  - any-glob-to-any-file:
+    - docs/*
+    - '**/*.md'
 enhancement:
  - head-branch: ['^feature', 'feature', 'Feature']
 bug-fix:
  - head-branch: ['^fix', 'fix', '^bugfix', 'bugfix']
 testing:
 - changed-files:
-  - any-glob-to-any-file: ['test/*', '**/*_test.jl']
+  - any-glob-to-any-file:
+    - test/*
+    - '**/*_test.jl'
+workflow:
+- changed-files:
+  - any-glob-to-any-file:
+    - .github/*
