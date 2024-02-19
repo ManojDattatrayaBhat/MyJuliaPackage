@@ -30,4 +30,3 @@ jobs:
           git config --global user.name "${{ github.actor }}"
       - name: register
         run: julia --project -e 'using LocalRegistry; using MyJuliaPackage; register(; ignore_reregistration = true)'
-        
