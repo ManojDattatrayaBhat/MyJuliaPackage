@@ -41,8 +41,9 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: 'github-actions[bot]'
-          body-includes: It seems the `version` field in `Project.toml` hasn't been updated in this PR. Current version of the package in Project.toml is ${{ env.main_version }}.
-          nth: 0
+          body-includes: |
+            It seems the `version` field in `Project.toml` hasn't been updated in this PR. Current version of the package in Project.toml is ${{ env.main_version }}.
+            - [ ]  Is a version bump required for these changes? Please consider updating the version accordingly.
       - name: Create PR comment
         if: ${{ env.update }} == "true"
         uses: peter-evans/create-or-update-comment@v4
