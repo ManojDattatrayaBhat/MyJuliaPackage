@@ -1,0 +1,55 @@
+name: Suggest Version bump
+on:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  Suggest_Version_bump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            Project.toml
+          sparse-checkout-cone-mode: false
+
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+          sparse-checkout: |
+            Project.toml
+          sparse-checkout-cone-mode: false
+
+      - name: Parse Project.toml
+        run: |
+          export current_version=$(awk -F' = ' '/^version/ {gsub(/"/, "", $2); print $2}' $GITHUB_WORKSPACE/Project.toml)
+          export main_version=$(awk -F' = ' '/^version/ {gsub(/"/, "", $2); print $2}' $GITHUB_WORKSPACE/main/Project.toml)
+          echo "current_version=$current_version" >> "$GITHUB_ENV"
+          echo "main_version=$main_version" >> "$GITHUB_ENV"
+          if [ $(echo "$main_version $current_version" | awk '{if($1>=$2)print 1;else print 0}') -eq 1 ]; then
+            export update="true"
+          else
+            export update="false"
+          fi
+          echo "update=$update" >> "$GITHUB_ENV"
+
+      - name: Comment On PR
+        if: ${{ env.update }} == "true"
+        uses: peter-evans/find-comment@v3
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-includes: It seems the `version` field in `Project.toml` hasn't been updated in this PR.
+
+      - name: Update PR comment
+        if: ${{ env.update }} == "true"
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            It seems the `version` field in `Project.toml` hasn't been updated in this PR. Current version of the package in Project.toml is ${{ env.main_version }}.
+            - [ ]  Is a version bump required for these changes? Please consider updating the version accordingly.
+          edit-mode: replace
