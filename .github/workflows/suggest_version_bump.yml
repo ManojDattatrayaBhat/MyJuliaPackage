@@ -35,16 +35,9 @@ jobs:
           fi
           echo "update=$update" >> "$GITHUB_ENV"
 
-      - name: Comment On PR
-        if: ${{ env.update }} == "true"
-        uses: peter-evans/find-comment@v3
-        id: fc
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          body-includes: It seems the `version` field in `Project.toml` hasn't been updated in this PR. Current version of the package in Project.toml is ${{ env.main_version }}.
-
       - name: Create PR comment
         if: ${{ env.update }} == "true"
+        id: fc
         uses: peter-evans/create-or-update-comment@v4
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
