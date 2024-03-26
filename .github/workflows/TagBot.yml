@@ -32,8 +32,6 @@ jobs:
         with:
           token: ${{ secrets.TAGBOT_TOKEN }}
           registry: ManojDattatrayaBhat/JuliaRegistry
-          user: ${{ github.actor }}
-          email: ${{ github.event.pusher.email }}
           changelog: |
             This is release {{ version }} of {{ package }}.
             {% if previous_release %}
