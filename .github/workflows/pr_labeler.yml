@@ -6,6 +6,7 @@ on:
 
 jobs:
   pr-labeler:
+    if: github.head_ref == 'main' || github.ref_name == 'main'
     runs-on: ubuntu-latest
     permissions:
       contents: read # for TimonVS/pr-labeler-action to read config
