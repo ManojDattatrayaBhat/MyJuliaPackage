@@ -6,12 +6,15 @@ on:
 
 jobs:
   pr-labeler:
-    if: github.head_ref == 'main' || github.ref_name == 'main'
     runs-on: ubuntu-latest
     permissions:
       contents: read # for TimonVS/pr-labeler-action to read config
       pull-requests: write # for TimonVS/pr-labeler-action to add labels in PR
     steps:
+      - name: Print GitHub Refs
+        run: |
+          echo ${{ github.head_ref }}
+          echo ${{ github.base_ref }}
       - uses: TimonVS/pr-labeler-action@v4
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
