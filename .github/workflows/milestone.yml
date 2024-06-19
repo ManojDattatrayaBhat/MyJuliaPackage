@@ -1,8 +1,7 @@
 name: Close Milestones and Move Issues
 on:
-  pull_request:
   schedule:
-    - cron: '0 0 * * *' # Runs at midnight every day
+    - cron: '0 1 * * *' # Runs at midnight every day at 1:00 AM
   workflow_dispatch:
 permissions:
   contents: write
