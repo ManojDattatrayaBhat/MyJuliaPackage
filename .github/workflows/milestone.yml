@@ -23,11 +23,10 @@ jobs:
 
       - name: Find past due milestones
         run: |
-          current_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          current_date=$(date -u +"%Y-%m-%dT00:00:00Z")
           past_due_milestones=$(jq -r --arg current_date "$current_date" '
             .[] | select(.due_on != null and .due_on < $current_date) | .number' milestones.json)
           echo "past_due_milestones=$past_due_milestones" >> $GITHUB_ENV
-          echo "past_due_milestones=$past_due_milestones"
 
       - name: Find closest and next closest milestones
         run: |
