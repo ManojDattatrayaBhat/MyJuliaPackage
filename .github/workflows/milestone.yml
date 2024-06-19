@@ -1,0 +1,77 @@
+name: Close Milestones and Move Issues
+on:
+  schedule:
+    - cron: '0 1 * * *' # Runs at midnight every day at 1:00 AM
+  workflow_dispatch:
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  close-and-move-milestones:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: List milestones
+        run: |
+          gh api -H "Accept: application/vnd.github+json" \
+            /repos/${{ github.repository }}/milestones > milestones.json
+          echo "milestones=$(cat milestones.json)" >> $GITHUB_ENV
+
+      - name: Find past due milestones
+        run: |
+          current_date=$(date -u +"%Y-%m-%dT00:00:00Z")
+          past_due_milestones=$(jq -r --arg current_date "$current_date" '
+            .[] | select(.due_on != null and .due_on < $current_date) | .number' milestones.json)
+          echo "past_due_milestones=$past_due_milestones" >> $GITHUB_ENV
+
+      - name: Find closest and next closest milestones
+        run: |
+          closest_milestone=$(jq -r '
+            . | map(select(.due_on != null)) | 
+            sort_by(.due_on) | 
+            .[0].number' milestones.json)
+          echo "closest_milestone=$closest_milestone" >> $GITHUB_ENV
+          echo "closest_milestone is $closest_milestone"
+
+          next_closest_milestone=$(jq -r '
+            . | map(select(.due_on != null)) | 
+            sort_by(.due_on) | 
+            .[1].number' milestones.json)
+          echo "next_closest_milestone=$next_closest_milestone" >> $GITHUB_ENV
+          echo "next_closest_milestone is $next_closest_milestone"
+
+          next_closest_milestone_title=$(jq -r '
+            . | map(select(.due_on != null)) | 
+            sort_by(.due_on) | 
+            .[1].title' milestones.json)
+          echo "next_closest_milestone_title=$next_closest_milestone_title" >> $GITHUB_ENV
+          echo "next_closest_milestone_title is $next_closest_milestone_title"
+
+      - name: Move issues and PRs to next milestone
+        if: env.past_due_milestones != ''
+        run: |
+          for milestone_number in $past_due_milestones; do
+            issues=$(gh api -H "Accept: application/vnd.github+json" \
+              /repos/${{ github.repository }}/issues?milestone=$milestone_number)
+            for issue in $(echo "$issues" | jq -r '.[].number'); do
+              gh api -X PATCH -H "Accept: application/vnd.github+json" \
+                /repos/${{ github.repository }}/issues/$issue \
+                -f milestone="$next_closest_milestone"
+              # Add a comment to the issue/PR
+              gh api -X POST -H "Accept: application/vnd.github+json" \
+                /repos/${{ github.repository }}/issues/$issue/comments \
+                -f body="This issue/PR has been moved to the next milestone: ${{ env.next_closest_milestone_title }}."
+            done
+          done
+
+      - name: Close past due milestones
+        if: env.past_due_milestones != ''
+        run: |
+          for milestone_number in $(echo "$past_due_milestones"); do
+            gh api -X PATCH -H "Accept: application/vnd.github+json" \
+              /repos/${{ github.repository }}/milestones/$milestone_number \
+              -f state=closed
+          done
