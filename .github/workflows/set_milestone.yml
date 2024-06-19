@@ -1,0 +1,8 @@
+name: Set Milestone
+on:
+  pull_request:
+jobs:
+  add:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: benelan/milestone-action@v3
