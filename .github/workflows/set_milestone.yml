@@ -1,0 +1,70 @@
+name: Set Milestone
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+  pull-requests: write
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  assign-milestone:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if milestone is set
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            if (pr.milestone) {
+              core.info(`This pull request has a milestone set: ${pr.milestone.title}`);
+              core.exportVariable('MILESTONE', 'true');
+            } else {
+              core.exportVariable('MILESTONE', 'false');
+              core.info("This pull request does not have any milestone set");
+            }
+
+      - name: List milestones
+        if: env.MILESTONE == 'false'
+        run: |
+          gh api -H "Accept: application/vnd.github+json" \
+            /repos/${{ github.repository }}/milestones > milestones.json
+          echo "milestones=$(cat milestones.json)" >> $GITHUB_ENV
+
+      - name: Find closest milestone
+        if: env.MILESTONE == 'false'
+        run: |
+          closest_milestone=$(jq -r '
+            . | map(select(.due_on != null)) | 
+            sort_by(.due_on) | 
+            .[0].title' milestones.json)
+          echo "closest_milestone=$closest_milestone" >> $GITHUB_ENV
+          echo "closest_milestone is $closest_milestone"
+
+      - name: Set OneParking Milestone
+        if: env.MILESTONE == 'false'
+        uses: zoispag/action-assign-milestone@v2
+        with:
+          repo-token: "${{ secrets.TAGBOT_TOKEN }}"
+          milestone: "${{ env.closest_milestone }}"
+
+      - name: Find Comment
+        if: env.MILESTONE == 'false'
+        uses: peter-evans/find-comment@v3
+        id: fmc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-includes: Milestone is set to
+
+      - name: Comment on PR
+        if: env.MILESTONE == 'false'
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.TAGBOT_TOKEN }}
+          comment-id: ${{ steps.fmc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            Milestone is set to ${{ env.closest_milestone }} by default.
+            - [ ] Please change the milestone if needed.
+          edit-mode: replace
