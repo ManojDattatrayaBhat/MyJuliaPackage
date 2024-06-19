@@ -71,7 +71,8 @@ jobs:
       - name: Close past due milestones
         if: env.past_due_milestones != ''
         run: |
-          for milestone_number in $past_due_milestones; do
+          for milestone_number in $(echo "$past_due_milestones"); do
             gh api -X PATCH -H "Accept: application/vnd.github+json" \
               /repos/${{ github.repository }}/milestones/$milestone_number \
               -f state=closed
+          done
