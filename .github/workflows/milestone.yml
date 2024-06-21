@@ -10,8 +10,6 @@ permissions:
 jobs:
   close-and-move-milestones:
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.TAGBOT_TOKEN }}
     steps:
       - name: List milestones
         run: |
