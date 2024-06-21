@@ -30,12 +30,14 @@ jobs:
         if: env.past_due_milestones != ''
         run: |
           for milestone_number in $(echo "$past_due_milestones"); do
+            milestone_title=$(jq -r --arg milestone_number "$milestone_number" '
+                .[] | select(.number == ($milestone_number | tonumber)) | .title' milestones.json)
             issues=$(gh api -H "Accept: application/vnd.github+json" \
               /repos/${{ github.repository }}/issues?milestone=$milestone_number)
             for issue in $(echo "$issues" | jq -r '.[].number'); do
               gh api -X POST -H "Accept: application/vnd.github+json" \
                 /repos/${{ github.repository }}/issues/$issue/comments \
-                -f body="This issue/PR belongs to the milestone $milestone_number which is past due and will be closed. Please update the milestone accordingly."
+                -f body="This issue/PR belongs to the milestone $milestone_title which is past due and will be closed. Please update the milestone accordingly."
             done
           done
 
