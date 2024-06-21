@@ -11,7 +11,7 @@ jobs:
   close-and-move-milestones:
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.TAGBOT_TOKEN }}
     steps:
       - name: List milestones
         run: |
@@ -29,6 +29,7 @@ jobs:
       - name: Add comment to issues and PRs in past due milestones
         if: env.past_due_milestones != ''
         run: |
+          gh auth login --with-token <<<"${{ secrets.TAGBOT_TOKEN }}"
           for milestone_number in $(echo "$past_due_milestones"); do
             milestone_title=$(jq -r --arg milestone_number "$milestone_number" '
                 .[] | select(.number == ($milestone_number | tonumber)) | .title' milestones.json)
