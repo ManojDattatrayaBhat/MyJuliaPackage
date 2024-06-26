@@ -16,7 +16,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const PR_STATUS = github.context.payload.pull_request.state;
-            const approved = github.context.payload.pull_request.reviews.nodes.filter(review => review.state === 'APPROVED');
+            const PR_STATUS = context.payload.pull_request.state;
+            const approved = context.payload.pull_request.reviews.nodes.filter(review => review.state === 'APPROVED');
             core.info(`PR_STATUS = $PR_STATUS`);
             core.info(`approved = $approved`);
