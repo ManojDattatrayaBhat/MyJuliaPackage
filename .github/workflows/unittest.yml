@@ -17,6 +17,6 @@ jobs:
         with:
           script: |
             const PR_STATUS = context.payload.pull_request.state;
-            const approved = context.payload.pull_request.review.state;
+            const approved = context.payload.pull_request.review;
             core.info(`PR_STATUS = $PR_STATUS`);
             core.info(`approved = $approved`);
