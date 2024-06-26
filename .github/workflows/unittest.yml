@@ -11,15 +11,9 @@ jobs:
     name: Unit Testing
     runs-on: ubuntu-latest
     steps:
-      - name: Check if PR is approved
-        id: pr-check
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const { data: reviews } = await github.pulls.listReviews({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.payload.pull_request.number,
-            });
-            const approved = reviews.some(review => review.state === 'APPROVED');
-            core.info(`approved = ${approved}`);
+      - name: Check if the PR is approved
+        id: pr-approval-check
+        run: |
+          PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+          APPROVED=$(gh pr view $PR_NUMBER --json reviews --jq '.reviews | map(select(.state == "APPROVED")) | length > 0')
+          echo "approved=$APPROVED"
