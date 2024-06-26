@@ -8,6 +8,7 @@ concurrency:
   cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
 env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  PR_NUMBER: ${{ github.event.pull_request.number }}
 jobs:
   test:
     name: Unit Testing
@@ -16,6 +17,5 @@ jobs:
       - name: Check if the PR is approved
         id: pr-approval-check
         run: |
-          PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
           APPROVED=$(gh pr view $PR_NUMBER --json reviews --jq '.reviews | map(select(.state == "APPROVED")) | length > 0')
           echo "approved=$APPROVED"
