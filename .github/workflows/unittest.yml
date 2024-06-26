@@ -14,6 +14,7 @@ jobs:
     name: Unit Testing
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Check if the PR is approved
         id: pr-approval-check
         run: |
