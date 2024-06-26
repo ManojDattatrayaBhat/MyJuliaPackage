@@ -37,7 +37,7 @@ jobs:
             for issue in $(echo "$issues" | jq -r '.[].number'); do
               gh api -X POST -H "Accept: application/vnd.github+json" \
                 /repos/${{ github.repository }}/issues/$issue/comments \
-                -f body="This issue/PR belongs to the milestone $milestone_title which is past due and will be closed. Please update the milestone accordingly."
+                -f body="This issue/PR belongs to the milestone **$milestone_title** which is past due and will be closed. Please update the milestone accordingly."
             done
           done
 
