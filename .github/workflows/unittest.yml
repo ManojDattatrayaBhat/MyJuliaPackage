@@ -1,0 +1,22 @@
+name: UnitTest
+on:
+  pull_request:
+concurrency:
+  # Skip intermediate builds: always.
+  # Cancel intermediate builds: only if it is a pull request build.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+jobs:
+  test:
+    name: Unit Testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if PR is approved
+        id: pr-check
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const PR_STATUS = github.context.payload.pull_request.state;
+            const approved = github.context.payload.pull_request.reviews.nodes.filter(review => review.state === 'APPROVED');
+            core.info(`PR_STATUS = $PR_STATUS`);
+            core.info(`approved = $approved`);
