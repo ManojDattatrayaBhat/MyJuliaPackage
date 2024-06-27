@@ -1,7 +1,6 @@
 name: PR Labeler
 on:
   pull_request:
-    types: [opened]
   workflow_dispatch:
 
 jobs:
@@ -11,6 +10,10 @@ jobs:
       contents: read # for TimonVS/pr-labeler-action to read config
       pull-requests: write # for TimonVS/pr-labeler-action to add labels in PR
     steps:
+      - name: Print GitHub Refs
+        run: |
+          echo ${{ github.head_ref }}
+          echo ${{ github.base_ref }}
       - uses: TimonVS/pr-labeler-action@v4
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
