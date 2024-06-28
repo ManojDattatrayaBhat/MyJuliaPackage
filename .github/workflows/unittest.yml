@@ -1,5 +1,7 @@
 name: UnitTest
 on:
+  pull_request_review:
+    types: [submitted]
   pull_request:
 concurrency:
   # Skip intermediate builds: always.
