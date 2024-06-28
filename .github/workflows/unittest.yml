@@ -21,29 +21,29 @@ jobs:
           APPROVED=$(gh pr view $PR_NUMBER --json reviews --jq '.reviews | map(select(.state == "APPROVED")) | length > 0')
           echo "approved=$APPROVED"
 
-          - name: Get Previous Workflow Run ID
-          id: get_workflow_run_id
-          run: |
-            PR_NUMBER=${{ github.event.pull_request.number }}
-            WORKFLOW_NAME="Check Previous Build Status"
-            REPO=${{ github.repository }}
-            API_URL="https://api.github.com/repos/$REPO/actions/runs"
+      - name: Get Previous Workflow Run ID
+        id: get_workflow_run_id
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          WORKFLOW_NAME="Check Previous Build Status"
+          REPO=${{ github.repository }}
+          API_URL="https://api.github.com/repos/$REPO/actions/runs"
 
-            # Fetch all workflow runs for the repository
-            RESPONSE=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" $API_URL)
+          # Fetch all workflow runs for the repository
+          RESPONSE=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" $API_URL)
 
-            # Filter workflow runs by pull request number and workflow name
-            RUN_ID=$(echo $RESPONSE | jq -r --arg PR_NUMBER "$PR_NUMBER" --arg WORKFLOW_NAME "$WORKFLOW_NAME" '
-              .workflow_runs[] |
-              select(.event == "pull_request" and .head_branch == $PR_NUMBER and .name == $WORKFLOW_NAME) |
-              .id' | tail -n 2 | head -n 1)
+          # Filter workflow runs by pull request number and workflow name
+          RUN_ID=$(echo $RESPONSE | jq -r --arg PR_NUMBER "$PR_NUMBER" --arg WORKFLOW_NAME "$WORKFLOW_NAME" '
+            .workflow_runs[] |
+            select(.event == "pull_request" and .head_branch == $PR_NUMBER and .name == $WORKFLOW_NAME) |
+            .id' | tail -n 2 | head -n 1)
 
-            if [ -z "$RUN_ID" ]; then
-              echo "No previous workflow run found."
-              exit 1
-            fi
+          if [ -z "$RUN_ID" ]; then
+            echo "No previous workflow run found."
+            exit 1
+          fi
 
-            echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
+          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
 
       - name: Get Workflow Run Status
         id: get_workflow_run_status
