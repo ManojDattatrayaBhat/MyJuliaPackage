@@ -41,7 +41,7 @@ jobs:
           RUN_ID=$(echo $RESPONSE | jq -r --arg PR_NUMBER "$PR_NUMBER" --arg WORKFLOW_NAME "$WORKFLOW_NAME" --arg BRANCH_NAME "$BRANCH_NAME" '
             .workflow_runs[] |
             select(.event == "pull_request" and .head_branch == $BRANCH_NAME and .name == $WORKFLOW_NAME) |
-            .id' | head -n 1 | head -n 1)
+            .id' | tail -n 1 | tail -n 1)
 
           if [ -z "$RUN_ID" ]; then
             echo "No previous workflow run found."
