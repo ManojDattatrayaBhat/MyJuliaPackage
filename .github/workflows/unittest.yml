@@ -25,6 +25,7 @@ jobs:
         id: get_workflow_run_id
         run: |
           PR_NUMBER=${{ github.event.pull_request.number }}
+          BRANCH_NAME=${{ github.event.pull_request.head.ref }}
           WORKFLOW_NAME="UnitTest"
           REPO=${{ github.repository }}
           API_URL="https://api.github.com/repos/$REPO/actions/runs"
@@ -32,10 +33,14 @@ jobs:
           # Fetch all workflow runs for the repository
           RESPONSE=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" $API_URL)
 
+          # Debugging: Print the response to check the content
+          echo "Response from GitHub API:"
+          echo "$RESPONSE"
+
           # Filter workflow runs by pull request number and workflow name
-          RUN_ID=$(echo $RESPONSE | jq -r --arg PR_NUMBER "$PR_NUMBER" --arg WORKFLOW_NAME "$WORKFLOW_NAME" '
+          RUN_ID=$(echo $RESPONSE | jq -r --arg PR_NUMBER "$PR_NUMBER" --arg WORKFLOW_NAME "$WORKFLOW_NAME" --arg BRANCH_NAME "$BRANCH_NAME" '
             .workflow_runs[] |
-            select(.event == "pull_request" and .head_branch == $PR_NUMBER and .name == $WORKFLOW_NAME) |
+            select(.event == "pull_request" and .head_branch == $BRANCH_NAME and .name == $WORKFLOW_NAME) |
             .id' | tail -n 2 | head -n 1)
 
           if [ -z "$RUN_ID" ]; then
