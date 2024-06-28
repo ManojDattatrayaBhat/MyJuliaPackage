@@ -25,7 +25,7 @@ jobs:
         id: get_workflow_run_id
         run: |
           PR_NUMBER=${{ github.event.pull_request.number }}
-          WORKFLOW_NAME="Check Previous Build Status"
+          WORKFLOW_NAME="UnitTest"
           REPO=${{ github.repository }}
           API_URL="https://api.github.com/repos/$REPO/actions/runs"
 
