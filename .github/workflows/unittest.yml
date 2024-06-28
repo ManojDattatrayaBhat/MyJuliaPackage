@@ -18,10 +18,10 @@ jobs:
       - name: Check if the PR is approved
         id: pr-approval-check
         run: |
-          APPROVED=$(gh pr view $PR_NUMBER --json reviews --jq '.reviews | map(select(.state == "APPROVED" and .submitted_at != null)) | length > 0')
+          APPROVED=$(gh pr view NUMBER --json reviewDecision --jq '.reviewDecision')
           echo "approved=$APPROVED"
 
       - name: Debug PR reviews
         run: |
-          gh pr view $PR_NUMBER --json reviews > reviews.json
+          gh pr view NUMBER --json reviewDecision > reviews.json
           cat reviews.json
