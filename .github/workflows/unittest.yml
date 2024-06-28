@@ -25,15 +25,3 @@ jobs:
         run: |
           gh pr view $PR_NUMBER --json reviews > reviews.json
           cat reviews.json
-
-      - name: Check if the PR is approved
-        id: pr-approval-check2
-        run: |
-          REVIEWS=$(gh api repos/OWNER/REPO/pulls/$PR_NUMBER/reviews)
-          APPROVED=$(echo "$REVIEWS" | jq '[.[] | select(.state == "APPROVED")] | length > 0')
-          echo "approved=$APPROVED"
-      
-      - name: Debug PR reviews
-        run: |
-          gh api repos/OWNER/REPO/pulls/$PR_NUMBER/reviews > reviews.json
-          cat reviews.json
