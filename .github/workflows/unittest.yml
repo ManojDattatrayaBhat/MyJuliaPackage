@@ -18,9 +18,9 @@ jobs:
       - name: Check if the PR is approved
         id: pr-approval-check
         run: |
-          REVIEWS=$(gh pr reviews $PR_NUMBER --json state)
-          APPROVED=$(echo "$REVIEWS" | jq '[.[] | select(.state == "APPROVED")] | length > 0')
+          APPROVED=$(gh pr view $PR_NUMBER --json reviews --jq '.reviews | map(select(.state == "APPROVED" and .submitted_at != null)) | length > 0')
           echo "approved=$APPROVED"
+          echo "approved=$APPROVED" >> $GITHUB_OUTPUT
 
       - name: Debug PR reviews
         run: |
