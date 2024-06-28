@@ -18,7 +18,23 @@ jobs:
       - name: Check if the PR is approved
         id: pr-approval-check
         run: |
-          APPROVED=$(gh pr view $PR_NUMBER --json reviews --jq '.reviews | map(select(.state == "APPROVED")) | length > 0')
+          APPROVED=$(gh api graphql -f query='
+            query($prNumber: Int!) {
+              repository(owner: "OWNER", name: "REPO") {
+                pullRequest(number: $prNumber) {
+                  reviews(last: 100) {
+                    nodes {
+                      state
+                      author {
+                        login
+                      }
+                      dismissedAt
+                    }
+                  }
+                }
+              }
+            }
+          ' -f prNumber=$PR_NUMBER --jq '.data.repository.pullRequest.reviews.nodes | map(select(.state == "APPROVED" and .dismissedAt == null)) | length > 0')
           echo "approved=$APPROVED"
 
       - name: Debug PR reviews
