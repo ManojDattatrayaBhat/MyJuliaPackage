@@ -20,3 +20,31 @@ jobs:
         run: |
           APPROVED=$(gh pr view $PR_NUMBER --json reviews --jq '.reviews | map(select(.state == "APPROVED")) | length > 0')
           echo "approved=$APPROVED"
+
+      - name: Get Workflow Run ID
+        id: get_workflow_run_id
+        run: |
+          API_URL="https://api.github.com/repos/${{ github.repository }}/actions/runs"
+          RUN_ID=$(curl -s -X GET -G \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -d "event=pull_request" \
+            -d "branch=$PR_NUMBER" \
+            $API_URL | jq -r '.workflow_runs[0].id')
+          echo "Workflow Run ID: $RUN_ID"
+          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
+
+      - name: Get Workflow Run Status
+        id: get_workflow_run_status
+        run: |
+          RUN_ID=${{ steps.get_workflow_run_id.outputs.run_id }}
+          API_URL="https://api.github.com/repos/${{ github.repository }}/actions/runs/$RUN_ID"
+          STATUS=$(curl -s -X GET \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            $API_URL | jq -r '.status')
+          echo "Previous Build Status: $STATUS"
+          echo "status=$STATUS" >> $GITHUB_OUTPUT
+
+      - name: Print Status
+        run: |
+          STATUS=${{ steps.get_workflow_run_status.outputs.status }}
+          echo "Previous Build Status: $STATUS"
