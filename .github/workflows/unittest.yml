@@ -21,50 +21,7 @@ jobs:
           APPROVED=$(gh pr view $PR_NUMBER --json reviews --jq '.reviews | map(select(.state == "APPROVED")) | length > 0')
           echo "approved=$APPROVED"
 
-      - name: Get Previous Workflow Run ID
-        id: get_workflow_run_id
+      - name: Debug PR reviews
         run: |
-          PR_NUMBER=${{ github.event.pull_request.number }}
-          BRANCH_NAME=${{ github.event.pull_request.head.ref }}
-          WORKFLOW_NAME="UnitTest"
-          REPO=${{ github.repository }}
-          API_URL="https://api.github.com/repos/$REPO/actions/runs"
-
-          # Fetch all workflow runs for the repository
-          RESPONSE=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" $API_URL)
-
-          # Debugging: Print the response to check the content
-          echo "Response from GitHub API:"
-          echo "$RESPONSE"
-
-          # Filter workflow runs by pull request number and workflow name
-          RUN_ID=$(echo $RESPONSE | jq -r --arg PR_NUMBER "$PR_NUMBER" --arg WORKFLOW_NAME "$WORKFLOW_NAME" --arg BRANCH_NAME "$BRANCH_NAME" '
-            .workflow_runs[] |
-            select(.event == "pull_request" and .head_branch == $BRANCH_NAME and .name == $WORKFLOW_NAME) |
-            .id' | tail -n 1 | tail -n 1)
-
-          if [ -z "$RUN_ID" ]; then
-            echo "No previous workflow run found."
-            exit 1
-          fi
-
-          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
-
-      - name: Get Workflow Run Status
-        id: get_workflow_run_status
-        run: |
-          RUN_ID=${{ steps.get_workflow_run_id.outputs.run_id }}
-          API_URL="https://api.github.com/repos/${{ github.repository }}/actions/runs/$RUN_ID"
-
-          STATUS=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" $API_URL | jq -r '.conclusion')
-
-          if [ -z "$STATUS" ]; then
-            STATUS="unknown"
-          fi
-
-          echo "status=$STATUS" >> $GITHUB_OUTPUT
-
-      - name: Print Status
-        run: |
-          STATUS=${{ steps.get_workflow_run_status.outputs.status }}
-          echo "Previous Build Status: $STATUS"
+          gh pr view $PR_NUMBER --json reviews > reviews.json
+          cat reviews.json
