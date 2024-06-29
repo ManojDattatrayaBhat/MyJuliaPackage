@@ -1,5 +1,7 @@
 name: UnitTest
 on:
+  pull_request_review:
+    types: [submitted]
   pull_request:
 concurrency:
   # Skip intermediate builds: always.
@@ -18,5 +20,5 @@ jobs:
       - name: Check if the PR is approved
         id: pr-approval-check
         run: |
-          APPROVED=$(gh pr view $PR_NUMBER --json reviews --jq '.reviews | map(select(.state == "APPROVED")) | length > 0')
+          APPROVED=$(gh pr view $PR_NUMBER --json reviewDecision --jq '.reviewDecision')
           echo "approved=$APPROVED"
